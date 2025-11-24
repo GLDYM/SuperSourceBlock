@@ -3,9 +3,13 @@ package com.sourceblock.block.entity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
@@ -48,11 +52,19 @@ public class CreativeSourceBlockEntity extends BlockEntity {
         this.storedFluid = fluid.copy();
         this.storedFluid.setAmount(CAPACITY);
         setChanged();
+        // 同步到客户端
+        if (level != null && !level.isClientSide) {
+            level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
+        }
     }
 
     public void clearFluid() {
         this.storedFluid = FluidStack.EMPTY;
         setChanged();
+        // 同步到客户端
+        if (level != null && !level.isClientSide) {
+            level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
+        }
     }
 
     public FluidStack getStoredFluid() {
@@ -138,6 +150,27 @@ public class CreativeSourceBlockEntity extends BlockEntity {
                 }
             }
         }
+    }
+
+    // ========== 客户端同步 ==========
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        CompoundTag tag = super.getUpdateTag();
+        saveAdditional(tag);
+        return tag;
+    }
+
+    @Nullable
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public AABB getRenderBoundingBox() {
+        // 扩大渲染边界以确保渲染器被调用
+        return new AABB(worldPosition).inflate(1.0);
     }
 
     @Override

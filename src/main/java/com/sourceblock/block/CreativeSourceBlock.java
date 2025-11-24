@@ -55,8 +55,10 @@ public class CreativeSourceBlock extends BaseEntityBlock {
             }
             
             // 检查是否是流体容器（如储罐等）
-            stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(fluidHandler -> {
-                if (fluidHandler.getTanks() > 0) {
+            var fluidHandlerOpt = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM);
+            if (fluidHandlerOpt.isPresent()) {
+                var fluidHandler = fluidHandlerOpt.orElse(null);
+                if (fluidHandler != null && fluidHandler.getTanks() > 0) {
                     FluidStack fluidInContainer = fluidHandler.getFluidInTank(0);
                     if (!fluidInContainer.isEmpty()) {
                         entity.setFluid(fluidInContainer.copy());
@@ -67,9 +69,10 @@ public class CreativeSourceBlock extends BaseEntityBlock {
                             ),
                             true
                         );
+                        return InteractionResult.SUCCESS;
                     }
                 }
-            });
+            }
             
             // 空手Shift右键清空
             if (stack.isEmpty() && player.isShiftKeyDown()) {
