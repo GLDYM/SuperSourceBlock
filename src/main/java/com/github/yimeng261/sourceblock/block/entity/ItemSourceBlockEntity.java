@@ -99,7 +99,7 @@ public class ItemSourceBlockEntity extends BlockEntity {
         blockEntity.setChanged();
     }
 
-    private static boolean tryTransferItem(Level level, BlockPos pos, Direction direction, ItemStack itemToTransfer) {
+    static boolean tryTransferItem(Level level, BlockPos pos, Direction direction, ItemStack itemToTransfer) {
         BlockEntity be = level.getBlockEntity(pos);
         if (be != null) {
             LazyOptional<IItemHandler> capability = be.getCapability(ForgeCapabilities.ITEM_HANDLER, direction);

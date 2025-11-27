@@ -21,6 +21,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.github.yimeng261.sourceblock.block.entity.ItemSourceBlockEntity.tryTransferItem;
+
 /**
  * 创造物品源方块实体 - 无限提供指定的物品
  */
@@ -93,26 +95,6 @@ public class CreativeItemSourceBlockEntity extends BlockEntity {
         }
 
         blockEntity.setChanged();
-    }
-
-    private static boolean tryTransferItem(Level level, BlockPos pos, Direction direction, ItemStack itemToTransfer) {
-        BlockEntity be = level.getBlockEntity(pos);
-        if (be != null) {
-            LazyOptional<IItemHandler> capability = be.getCapability(ForgeCapabilities.ITEM_HANDLER, direction);
-            return capability.map(handler -> {
-                ItemStack toInsert = itemToTransfer.copy();
-                toInsert.setCount(Math.min(64, itemToTransfer.getMaxStackSize()));
-                
-                for (int i = 0; i < handler.getSlots(); i++) {
-                    ItemStack remainder = handler.insertItem(i, toInsert, false);
-                    if (remainder.getCount() < toInsert.getCount()) {
-                        return true; // 成功插入了至少一个物品
-                    }
-                }
-                return false;
-            }).orElse(false);
-        }
-        return false;
     }
 
     @Override
