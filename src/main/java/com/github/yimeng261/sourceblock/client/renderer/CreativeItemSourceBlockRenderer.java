@@ -1,8 +1,8 @@
-package com.sourceblock.client.renderer;
+package com.github.yimeng261.sourceblock.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import com.sourceblock.block.entity.CreativeItemSourceBlockEntity;
+import com.github.yimeng261.sourceblock.block.entity.CreativeItemSourceBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;

@@ -1,6 +1,7 @@
-package com.sourceblock.block;
+package com.github.yimeng261.sourceblock.block;
 
-import com.sourceblock.block.entity.CreativeItemSourceBlockEntity;
+import com.github.yimeng261.sourceblock.block.entity.CreativeItemSourceBlockEntity;
+import com.github.yimeng261.sourceblock.block.entity.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -76,7 +77,7 @@ public class CreativeItemSourceBlock extends BaseEntityBlock {
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, @NotNull BlockState state,
                                                                   @NotNull BlockEntityType<T> blockEntityType) {
         return level.isClientSide ? null : createTickerHelper(blockEntityType, 
-            com.sourceblock.block.entity.ModBlockEntities.CREATIVE_ITEM_SOURCE_BLOCK_ENTITY.get(), 
+            ModBlockEntities.CREATIVE_ITEM_SOURCE_BLOCK_ENTITY.get(),
             CreativeItemSourceBlockEntity::serverTick);
     }
 }

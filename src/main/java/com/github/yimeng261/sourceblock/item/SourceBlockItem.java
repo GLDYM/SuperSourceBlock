@@ -1,6 +1,6 @@
-package com.sourceblock.item;
+package com.github.yimeng261.sourceblock.item;
 
-import com.sourceblock.block.SourceBlock;
+import com.github.yimeng261.sourceblock.block.SourceBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;

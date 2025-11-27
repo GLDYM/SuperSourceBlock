@@ -6,7 +6,10 @@
       "item": "sourceblock:empty_item_source_block"
     },
     {
-      "item": "minecraft:cobblestone"
+      "item": "sourceblock:water_source_block"
+    },
+    {
+      "item": "sourceblock:lava_source_block"
     }
   ],
   "result": {

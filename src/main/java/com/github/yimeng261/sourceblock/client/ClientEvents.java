@@ -1,9 +1,9 @@
-package com.sourceblock.client;
+package com.github.yimeng261.sourceblock.client;
 
-import com.sourceblock.SourceBlockMod;
-import com.sourceblock.block.entity.ModBlockEntities;
-import com.sourceblock.client.renderer.CreativeSourceBlockRenderer;
-import com.sourceblock.client.renderer.CreativeItemSourceBlockRenderer;
+import com.github.yimeng261.sourceblock.SourceBlockMod;
+import com.github.yimeng261.sourceblock.block.entity.ModBlockEntities;
+import com.github.yimeng261.sourceblock.client.renderer.CreativeSourceBlockRenderer;
+import com.github.yimeng261.sourceblock.client.renderer.CreativeItemSourceBlockRenderer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

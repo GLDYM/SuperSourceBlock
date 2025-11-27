@@ -1,6 +1,7 @@
-package com.sourceblock.block.entity;
+package com.github.yimeng261.sourceblock.block.entity;
 
-import com.sourceblock.block.SourceBlock;
+import com.github.yimeng261.sourceblock.block.SourceBlock;
+import com.github.yimeng261.sourceblock.block.entity.compat.MekanismGasHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -17,6 +18,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -55,6 +57,7 @@ public class SourceBlockEntity extends BlockEntity {
     private final LazyOptional<IFluidHandler> fluidHandler = LazyOptional.of(FluidHandlerImpl::new);
     private final LazyOptional<IEnergyStorage> energyStorage = LazyOptional.of(EnergyStorageImpl::new);
     private final LazyOptional<IItemHandler> itemHandler = LazyOptional.of(ItemHandlerImpl::new);
+    private LazyOptional<?> mekanismGasHandler = null;
 
     public SourceBlockEntity(BlockPos pos, BlockState blockState) {
         super(ModBlockEntities.SOURCE_BLOCK_ENTITY.get(), pos, blockState);
@@ -179,6 +182,23 @@ public class SourceBlockEntity extends BlockEntity {
         if (cap == ForgeCapabilities.ITEM_HANDLER) {
             return itemHandler.cast();
         }
+        
+        // Mekanism气体能力支持
+        if (ModList.get().isLoaded("mekanism")) {
+            try {
+                // 尝试获取Mekanism的气体能力
+                String capName = cap.getName();
+                if (capName != null && (capName.contains("gas_handler") || capName.contains("chemical"))) {
+                    if (mekanismGasHandler == null) {
+                        mekanismGasHandler = LazyOptional.of(() -> new MekanismGasHandler(this));
+                    }
+                    return mekanismGasHandler.cast();
+                }
+            } catch (Exception e) {
+                // 忽略异常，继续使用默认能力
+            }
+        }
+        
         return super.getCapability(cap, side);
     }
 
@@ -188,6 +208,9 @@ public class SourceBlockEntity extends BlockEntity {
         fluidHandler.invalidate();
         energyStorage.invalidate();
         itemHandler.invalidate();
+        if (mekanismGasHandler != null) {
+            mekanismGasHandler.invalidate();
+        }
     }
 
     // ========== IFluidHandler 实现 ==========

@@ -1,6 +1,5 @@
-package com.sourceblock.block.entity;
+package com.github.yimeng261.sourceblock.block.entity;
 
-import com.sourceblock.block.SourceBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -19,10 +18,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.sourceblock.block.entity.SourceBlockEntity.tryTransferFluid;
+import static com.github.yimeng261.sourceblock.block.entity.SourceBlockEntity.tryTransferFluid;
 
 /**
  * 创造源方块实体 - 无限提供指定的流体

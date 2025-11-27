@@ -1,7 +1,7 @@
-package com.sourceblock.block.entity;
+package com.github.yimeng261.sourceblock.block.entity;
 
-import com.sourceblock.SourceBlockMod;
-import com.sourceblock.block.ModBlocks;
+import com.github.yimeng261.sourceblock.SourceBlockMod;
+import com.github.yimeng261.sourceblock.block.ModBlocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;

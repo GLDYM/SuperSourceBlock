@@ -1,4 +1,4 @@
-package com.sourceblock.block.entity;
+package com.github.yimeng261.sourceblock.block.entity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

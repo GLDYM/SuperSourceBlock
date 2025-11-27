@@ -1,9 +1,9 @@
-package com.sourceblock.item;
+package com.github.yimeng261.sourceblock.item;
 
-import com.sourceblock.SourceBlockMod;
-import com.sourceblock.block.ItemSourceBlock;
-import com.sourceblock.block.ModBlocks;
-import com.sourceblock.block.SourceBlock;
+import com.github.yimeng261.sourceblock.SourceBlockMod;
+import com.github.yimeng261.sourceblock.block.ItemSourceBlock;
+import com.github.yimeng261.sourceblock.block.ModBlocks;
+import com.github.yimeng261.sourceblock.block.SourceBlock;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.DeferredRegister;

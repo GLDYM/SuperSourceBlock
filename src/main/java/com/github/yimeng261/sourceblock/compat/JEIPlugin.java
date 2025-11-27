@@ -1,7 +1,7 @@
-package com.sourceblock.compat;
+package com.github.yimeng261.sourceblock.compat;
 
-import com.sourceblock.SourceBlockMod;
-import com.sourceblock.item.ModItems;
+import com.github.yimeng261.sourceblock.SourceBlockMod;
+import com.github.yimeng261.sourceblock.item.ModItems;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;

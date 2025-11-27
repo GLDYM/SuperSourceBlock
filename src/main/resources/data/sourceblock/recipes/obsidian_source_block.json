@@ -6,7 +6,16 @@
       "item": "sourceblock:empty_item_source_block"
     },
     {
-      "item": "minecraft:obsidian"
+      "item": "sourceblock:water_source_block"
+    },
+    {
+      "item": "sourceblock:water_source_block"
+    },
+    {
+      "item": "sourceblock:lava_source_block"
+    },
+    {
+      "item": "sourceblock:lava_source_block"
     }
   ],
   "result": {

@@ -1,10 +1,11 @@
-package com.sourceblock;
+package com.github.yimeng261.sourceblock;
 
 import com.mojang.logging.LogUtils;
-import com.sourceblock.block.ModBlocks;
-import com.sourceblock.block.entity.ModBlockEntities;
-import com.sourceblock.event.ModEvents;
-import com.sourceblock.item.ModItems;
+import com.github.yimeng261.sourceblock.block.ModBlocks;
+import com.github.yimeng261.sourceblock.block.entity.ModBlockEntities;
+import com.github.yimeng261.sourceblock.compat.MekanismCompat;
+import com.github.yimeng261.sourceblock.event.ModEvents;
+import com.github.yimeng261.sourceblock.item.ModItems;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -54,6 +55,9 @@ public class SourceBlockMod {
 
         // Register event handlers
         MinecraftForge.EVENT_BUS.register(ModEvents.class);
+
+        // Initialize Mekanism compatibility
+        MekanismCompat.init(modEventBus);
 
         LOGGER.info("Source Block Mod initialized");
     }

@@ -1,7 +1,8 @@
-package com.sourceblock.block;
+package com.github.yimeng261.sourceblock.block;
 
-import com.sourceblock.block.entity.ItemSourceBlockEntity;
-import com.sourceblock.item.ModItems;
+import com.github.yimeng261.sourceblock.block.entity.ModBlockEntities;
+import com.github.yimeng261.sourceblock.block.entity.SourceBlockEntity;
+import com.github.yimeng261.sourceblock.item.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
@@ -28,58 +29,68 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.List;
 
-public class ItemSourceBlock extends BaseEntityBlock {
-    public static final EnumProperty<ItemType> ITEM_TYPE = EnumProperty.create("item_type", ItemType.class);
+public class SourceBlock extends BaseEntityBlock {
+    public static final EnumProperty<FluidType> FLUID_TYPE = EnumProperty.create("fluid_type", FluidType.class);
 
-    public ItemSourceBlock(Properties properties) {
+    public SourceBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any()
-            .setValue(ITEM_TYPE, ItemType.EMPTY));
+            .setValue(FLUID_TYPE, FluidType.EMPTY));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(ITEM_TYPE);
+        builder.add(FLUID_TYPE);
     }
 
     @Override
     public @NotNull InteractionResult use(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos,
                                           @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {
         ItemStack stack = player.getItemInHand(hand);
-        ItemType currentType = state.getValue(ITEM_TYPE);
+        FluidType currentType = state.getValue(FLUID_TYPE);
 
-        // 用圆石右键空槽
-        if (currentType == ItemType.EMPTY && stack.is(Items.COBBLESTONE)) {
+        // 用水桶右键空槽
+        if (currentType == FluidType.EMPTY && stack.is(Items.WATER_BUCKET)) {
             if (!level.isClientSide) {
-                level.setBlockAndUpdate(pos, state.setValue(ITEM_TYPE, ItemType.COBBLESTONE));
+                level.setBlockAndUpdate(pos, state.setValue(FLUID_TYPE, FluidType.WATER));
                 if (!player.isCreative()) {
                     stack.shrink(1);
+                    player.addItem(new ItemStack(Items.BUCKET));
                 }
             }
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
 
-        // 用黑曜石右键空槽
-        if (currentType == ItemType.EMPTY && stack.is(Items.OBSIDIAN)) {
+        // 用岩浆桶右键空槽
+        if (currentType == FluidType.EMPTY && stack.is(Items.LAVA_BUCKET)) {
             if (!level.isClientSide) {
-                level.setBlockAndUpdate(pos, state.setValue(ITEM_TYPE, ItemType.OBSIDIAN));
+                level.setBlockAndUpdate(pos, state.setValue(FLUID_TYPE, FluidType.LAVA));
                 if (!player.isCreative()) {
                     stack.shrink(1);
+                    player.addItem(new ItemStack(Items.BUCKET));
                 }
             }
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
 
-        // 空手右键已填充的槽，可以获得物品
-        if (stack.isEmpty()) {
-            if (currentType == ItemType.COBBLESTONE) {
+        // 用空桶右键已填充的槽，可以获得流体
+        if (stack.is(Items.BUCKET)) {
+            if (currentType == FluidType.WATER) {
                 if (!level.isClientSide && !player.isCreative()) {
-                    player.addItem(new ItemStack(Items.COBBLESTONE));
+                    stack.shrink(1);
+                    player.addItem(new ItemStack(Items.WATER_BUCKET));
                 }
                 return InteractionResult.sidedSuccess(level.isClientSide);
-            } else if (currentType == ItemType.OBSIDIAN) {
+            } else if (currentType == FluidType.LAVA) {
                 if (!level.isClientSide && !player.isCreative()) {
-                    player.addItem(new ItemStack(Items.OBSIDIAN));
+                    stack.shrink(1);
+                    player.addItem(new ItemStack(Items.LAVA_BUCKET));
+                }
+                return InteractionResult.sidedSuccess(level.isClientSide);
+            } else if (currentType == FluidType.MILK) {
+                if (!level.isClientSide && !player.isCreative()) {
+                    stack.shrink(1);
+                    player.addItem(new ItemStack(Items.MILK_BUCKET));
                 }
                 return InteractionResult.sidedSuccess(level.isClientSide);
             }
@@ -96,7 +107,7 @@ public class ItemSourceBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
-        return new ItemSourceBlockEntity(pos, state);
+        return new SourceBlockEntity(pos, state);
     }
 
     @Nullable
@@ -104,8 +115,8 @@ public class ItemSourceBlock extends BaseEntityBlock {
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, @NotNull BlockState state,
                                                                   @NotNull BlockEntityType<T> blockEntityType) {
         return level.isClientSide ? null : createTickerHelper(blockEntityType, 
-            com.sourceblock.block.entity.ModBlockEntities.ITEM_SOURCE_BLOCK_ENTITY.get(), 
-            ItemSourceBlockEntity::serverTick);
+            ModBlockEntities.SOURCE_BLOCK_ENTITY.get(),
+            SourceBlockEntity::serverTick);
     }
 
     @Override
@@ -114,11 +125,12 @@ public class ItemSourceBlock extends BaseEntityBlock {
     }
 
     private Item getItem(BlockState state) {
-        ItemType itemType = state.getValue(ITEM_TYPE);
-        return switch (itemType) {
-            case COBBLESTONE -> ModItems.COBBLESTONE_SOURCE_BLOCK.get();
-            case OBSIDIAN -> ModItems.OBSIDIAN_SOURCE_BLOCK.get();
-            default -> ModItems.EMPTY_ITEM_SOURCE_BLOCK.get();
+        FluidType fluidType = state.getValue(FLUID_TYPE);
+        return switch (fluidType) {
+            case WATER -> ModItems.WATER_SOURCE_BLOCK.get();
+            case LAVA -> ModItems.LAVA_SOURCE_BLOCK.get();
+            case MILK -> ModItems.MILK_SOURCE_BLOCK.get();
+            default -> ModItems.EMPTY_SOURCE_BLOCK.get();
         };
     }
 
@@ -129,14 +141,33 @@ public class ItemSourceBlock extends BaseEntityBlock {
         return new ItemStack(getItem(state));
     }
 
-    public enum ItemType implements StringRepresentable {
+    /**
+     * 根据源方块类型返回不同的光照等级
+     * 岩浆源方块：15（最高亮度）
+     * 水源方块：8（中等亮度）
+     * 牛奶源方块：5（较低亮度）
+     * 空源方块：0（无亮度）
+     */
+    @Override
+    public int getLightEmission(BlockState state, net.minecraft.world.level.BlockGetter level, BlockPos pos) {
+        FluidType fluidType = state.getValue(FLUID_TYPE);
+        return switch (fluidType) {
+            case LAVA -> 15;  // 岩浆源方块最亮，等同于萤石
+            case WATER -> 8;  // 水源方块中等亮度
+            case MILK -> 5;   // 牛奶源方块较低亮度
+            case EMPTY -> 0;  // 空源方块无亮度
+        };
+    }
+
+    public enum FluidType implements StringRepresentable {
         EMPTY("empty"),
-        COBBLESTONE("cobblestone"),
-        OBSIDIAN("obsidian");
+        WATER("water"),
+        LAVA("lava"),
+        MILK("milk");
 
         private final String name;
 
-        ItemType(String name) {
+        FluidType(String name) {
             this.name = name;
         }
 

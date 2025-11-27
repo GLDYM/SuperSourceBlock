@@ -1,6 +1,6 @@
-package com.sourceblock.event;
+package com.github.yimeng261.sourceblock.event;
 
-import com.sourceblock.item.ModItems;
+import com.github.yimeng261.sourceblock.item.ModItems;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.Cow;
