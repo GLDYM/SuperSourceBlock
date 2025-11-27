@@ -1,7 +1,7 @@
 {
   "parent": "block/cube_all",
   "textures": {
-    "all": "sourceblock:block/creative_source_block"
+    "all": "sourceblock:block/item_source_block_empty"
   }
 }
 

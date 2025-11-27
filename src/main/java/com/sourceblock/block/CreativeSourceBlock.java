@@ -58,7 +58,7 @@ public class CreativeSourceBlock extends BaseEntityBlock {
             var fluidHandlerOpt = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM);
             if (fluidHandlerOpt.isPresent()) {
                 var fluidHandler = fluidHandlerOpt.orElse(null);
-                if (fluidHandler != null && fluidHandler.getTanks() > 0) {
+                if (fluidHandler.getTanks() > 0) {
                     FluidStack fluidInContainer = fluidHandler.getFluidInTank(0);
                     if (!fluidInContainer.isEmpty()) {
                         entity.setFluid(fluidInContainer.copy());

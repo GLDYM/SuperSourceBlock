@@ -74,12 +74,12 @@ public class CreativeItemSourceBlockRenderer implements BlockEntityRenderer<Crea
                 break;
             case NORTH:
                 // 在北面，物品朝北
-                poseStack.translate(0, 0, -0.501); // 在外侧
+                poseStack.translate(0, 0, 0.501); // 在外侧
                 break;
             case SOUTH:
                 // 在南面，物品朝南
                 poseStack.mulPose(Axis.YP.rotationDegrees(180));
-                poseStack.translate(0, 0, -0.501); // 在外侧
+                poseStack.translate(0, 0, 0.501); // 在外侧
                 break;
             case WEST:
                 // 在西面，物品朝西

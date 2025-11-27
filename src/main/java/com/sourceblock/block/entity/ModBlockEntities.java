@@ -25,5 +25,10 @@ public class ModBlockEntities {
         BLOCK_ENTITIES.register("creative_item_source_block_entity", () ->
             BlockEntityType.Builder.of(CreativeItemSourceBlockEntity::new, ModBlocks.CREATIVE_ITEM_SOURCE_BLOCK.get())
                 .build(null));
+
+    public static final RegistryObject<BlockEntityType<ItemSourceBlockEntity>> ITEM_SOURCE_BLOCK_ENTITY =
+        BLOCK_ENTITIES.register("item_source_block_entity", () ->
+            BlockEntityType.Builder.of(ItemSourceBlockEntity::new, ModBlocks.ITEM_SOURCE_BLOCK.get())
+                .build(null));
 }
 

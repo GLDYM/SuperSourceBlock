@@ -4,7 +4,6 @@ import com.sourceblock.block.SourceBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -40,7 +39,7 @@ import java.util.Map;
  */
 public class SourceBlockEntity extends BlockEntity {
     // 每个面的计时器
-    private final Map<Direction, Integer> tickCounters = new HashMap<>();
+    private int tickCounter=0;
     private final Map<Direction, Boolean> fastMode = new HashMap<>();
     
     private static final int SLOW_INTERVAL = 20;
@@ -53,17 +52,16 @@ public class SourceBlockEntity extends BlockEntity {
     private static boolean milkFluidChecked = false;
 
     // Capabilities
-    private final LazyOptional<IFluidHandler> fluidHandler = LazyOptional.of(() -> new FluidHandlerImpl());
-    private final LazyOptional<IEnergyStorage> energyStorage = LazyOptional.of(() -> new EnergyStorageImpl());
-    private final LazyOptional<IItemHandler> itemHandler = LazyOptional.of(() -> new ItemHandlerImpl());
+    private final LazyOptional<IFluidHandler> fluidHandler = LazyOptional.of(FluidHandlerImpl::new);
+    private final LazyOptional<IEnergyStorage> energyStorage = LazyOptional.of(EnergyStorageImpl::new);
+    private final LazyOptional<IItemHandler> itemHandler = LazyOptional.of(ItemHandlerImpl::new);
 
     public SourceBlockEntity(BlockPos pos, BlockState blockState) {
         super(ModBlockEntities.SOURCE_BLOCK_ENTITY.get(), pos, blockState);
         
         // 初始化所有面的计时器和模式
         for (Direction direction : Direction.values()) {
-            tickCounters.put(direction, 0);
-            fastMode.put(direction, false);
+            fastMode.put(direction, true);
         }
     }
 
@@ -78,33 +76,16 @@ public class SourceBlockEntity extends BlockEntity {
         if (fluidStack.isEmpty()) return;
 
         // 对每个面进行处理
+        blockEntity.tickCounter++;
         for (Direction direction : Direction.values()) {
-            int currentTick = blockEntity.tickCounters.get(direction);
             boolean isFastMode = blockEntity.fastMode.get(direction);
-            
-            // 增加计时器
-            currentTick++;
-            
-            // 根据模式检查是否应该尝试输出
             int interval = isFastMode ? FAST_INTERVAL : SLOW_INTERVAL;
-            if (currentTick >= interval) {
-                currentTick = 0;
-                
-                // 尝试向该面输出流体
+
+            if (blockEntity.tickCounter % interval == 0) {
                 BlockPos neighborPos = pos.relative(direction);
                 boolean success = tryTransferFluid(level, neighborPos, direction.getOpposite(), fluidStack);
-                
-                // 根据输出结果更新模式
-                if (success) {
-                    // 成功输出，切换到快速模式
-                    blockEntity.fastMode.put(direction, true);
-                } else {
-                    // 输出失败，切换到慢速模式
-                    blockEntity.fastMode.put(direction, false);
-                }
+                blockEntity.fastMode.put(direction, success);
             }
-            
-            blockEntity.tickCounters.put(direction, currentTick);
         }
 
         blockEntity.setChanged();
@@ -121,11 +102,6 @@ public class SourceBlockEntity extends BlockEntity {
     
     /**
      * 尝试获取牛奶流体。
-     * 支持的流体ID（按优先级）：
-     * 1. create:milk (机械动力)
-     * 2. createbigcannons:milk (机械动力大炮)
-     * 3. create_confectionery:milk (机械动力糖果)
-     * 4. 其他包含"milk"的流体
      */
     private static FluidStack getMilkFluidStack() {
         // 如果已经检查过且没找到，直接返回空
@@ -141,8 +117,6 @@ public class SourceBlockEntity extends BlockEntity {
         // 尝试按优先级查找牛奶流体
         String[] milkFluidIds = {
             "create:milk",                    // 机械动力
-            "createbigcannons:milk",          // 机械动力大炮
-            "create_confectionery:milk",      // 机械动力糖果
             "ad_astra:milk",                  // Ad Astra
             "thermal:milk",                   // 热力系列
             "productivebees:milk"             // 生产蜜蜂
@@ -179,7 +153,7 @@ public class SourceBlockEntity extends BlockEntity {
         return FluidStack.EMPTY;
     }
 
-    private static boolean tryTransferFluid(Level level, BlockPos pos, Direction direction, FluidStack fluidStack) {
+    static boolean tryTransferFluid(Level level, BlockPos pos, Direction direction, FluidStack fluidStack) {
         // 获取目标位置的流体处理能力
         BlockEntity be = level.getBlockEntity(pos);
         if (be != null) {
@@ -193,37 +167,6 @@ public class SourceBlockEntity extends BlockEntity {
         return false;
     }
 
-    @Override
-    protected void saveAdditional(@NotNull CompoundTag tag) {
-        super.saveAdditional(tag);
-        
-        // 保存每个面的状态
-        CompoundTag facesTag = new CompoundTag();
-        for (Direction direction : Direction.values()) {
-            CompoundTag faceTag = new CompoundTag();
-            faceTag.putInt("tick", tickCounters.get(direction));
-            faceTag.putBoolean("fast", fastMode.get(direction));
-            facesTag.put(direction.getName(), faceTag);
-        }
-        tag.put("faces", facesTag);
-    }
-
-    @Override
-    public void load(@NotNull CompoundTag tag) {
-        super.load(tag);
-        
-        // 加载每个面的状态
-        if (tag.contains("faces")) {
-            CompoundTag facesTag = tag.getCompound("faces");
-            for (Direction direction : Direction.values()) {
-                if (facesTag.contains(direction.getName())) {
-                    CompoundTag faceTag = facesTag.getCompound(direction.getName());
-                    tickCounters.put(direction, faceTag.getInt("tick"));
-                    fastMode.put(direction, faceTag.getBoolean("fast"));
-                }
-            }
-        }
-    }
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
@@ -436,18 +379,15 @@ public class SourceBlockEntity extends BlockEntity {
             
             // 空源方块销毁所有输入的物品
             if (fluidType == SourceBlock.FluidType.EMPTY) {
-                // 返回空，表示全部接受（实际上是销毁）
                 return ItemStack.EMPTY;
             }
             
-            // 其他类型的源方块不接受物品输入
             return stack;
         }
 
         @NotNull
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            // 不提供物品输出
             return ItemStack.EMPTY;
         }
 

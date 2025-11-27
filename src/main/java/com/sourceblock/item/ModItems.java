@@ -1,6 +1,7 @@
 package com.sourceblock.item;
 
 import com.sourceblock.SourceBlockMod;
+import com.sourceblock.block.ItemSourceBlock;
 import com.sourceblock.block.ModBlocks;
 import com.sourceblock.block.SourceBlock;
 import net.minecraft.world.item.BlockItem;
@@ -36,5 +37,18 @@ public class ModItems {
     public static final RegistryObject<BlockItem> CREATIVE_ITEM_SOURCE_BLOCK = ITEMS.register("creative_item_source_block",
         () -> new BlockItem(ModBlocks.CREATIVE_ITEM_SOURCE_BLOCK.get(), 
             new Item.Properties()));
+
+    public static final RegistryObject<BlockItem> EMPTY_ITEM_SOURCE_BLOCK = ITEMS.register("empty_item_source_block",
+        () -> new ItemSourceBlockItem(ModBlocks.ITEM_SOURCE_BLOCK.get(), 
+            new Item.Properties(), ItemSourceBlock.ItemType.EMPTY));
+
+    public static final RegistryObject<BlockItem> COBBLESTONE_SOURCE_BLOCK = ITEMS.register("cobblestone_source_block",
+        () -> new ItemSourceBlockItem(ModBlocks.ITEM_SOURCE_BLOCK.get(), 
+            new Item.Properties(), ItemSourceBlock.ItemType.COBBLESTONE));
+
+    public static final RegistryObject<BlockItem> OBSIDIAN_SOURCE_BLOCK = ITEMS.register("obsidian_source_block",
+        () -> new ItemSourceBlockItem(ModBlocks.ITEM_SOURCE_BLOCK.get(), 
+            new Item.Properties(), ItemSourceBlock.ItemType.OBSIDIAN));
 }
+
 

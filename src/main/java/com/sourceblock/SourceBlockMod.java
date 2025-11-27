@@ -9,7 +9,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -39,6 +38,9 @@ public class SourceBlockMod {
                 output.accept(ModItems.MILK_SOURCE_BLOCK.get());
                 output.accept(ModItems.CREATIVE_SOURCE_BLOCK.get());
                 output.accept(ModItems.CREATIVE_ITEM_SOURCE_BLOCK.get());
+                output.accept(ModItems.EMPTY_ITEM_SOURCE_BLOCK.get());
+                output.accept(ModItems.COBBLESTONE_SOURCE_BLOCK.get());
+                output.accept(ModItems.OBSIDIAN_SOURCE_BLOCK.get());
             }).build());
 
     public SourceBlockMod(FMLJavaModLoadingContext context) {
@@ -53,21 +55,8 @@ public class SourceBlockMod {
         // Register event handlers
         MinecraftForge.EVENT_BUS.register(ModEvents.class);
 
-        // Register creative mode tab contents
-        modEventBus.addListener(this::addCreative);
-
         LOGGER.info("Source Block Mod initialized");
     }
 
-    private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
-            event.accept(ModItems.EMPTY_SOURCE_BLOCK.get());
-            event.accept(ModItems.WATER_SOURCE_BLOCK.get());
-            event.accept(ModItems.LAVA_SOURCE_BLOCK.get());
-            event.accept(ModItems.MILK_SOURCE_BLOCK.get());
-            event.accept(ModItems.CREATIVE_SOURCE_BLOCK.get());
-            event.accept(ModItems.CREATIVE_ITEM_SOURCE_BLOCK.get());
-        }
-    }
 }
 

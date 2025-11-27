@@ -1,5 +1,6 @@
 package com.sourceblock.block.entity;
 
+import com.sourceblock.block.SourceBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -21,31 +22,20 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.sourceblock.block.entity.SourceBlockEntity.tryTransferFluid;
+
 /**
  * 创造源方块实体 - 无限提供指定的流体
  */
 public class CreativeSourceBlockEntity extends BlockEntity {
     private FluidStack storedFluid = FluidStack.EMPTY;
-    
-    // 每个面的计时器
-    private final Map<Direction, Integer> tickCounters = new HashMap<>();
-    private final Map<Direction, Boolean> fastMode = new HashMap<>();
-    
-    private static final int SLOW_INTERVAL = 20;
-    private static final int FAST_INTERVAL = 1;
-    private static final int TRANSFER_AMOUNT = Integer.MAX_VALUE;
+
     public static final int CAPACITY = Integer.MAX_VALUE;
 
-    private final LazyOptional<IFluidHandler> fluidHandler = LazyOptional.of(() -> new FluidHandlerImpl());
+    private final LazyOptional<IFluidHandler> fluidHandler = LazyOptional.of(FluidHandlerImpl::new);
 
     public CreativeSourceBlockEntity(BlockPos pos, BlockState blockState) {
         super(ModBlockEntities.CREATIVE_SOURCE_BLOCK_ENTITY.get(), pos, blockState);
-        
-        // 初始化所有面的计时器和模式
-        for (Direction direction : Direction.values()) {
-            tickCounters.put(direction, 0);
-            fastMode.put(direction, false);
-        }
     }
 
     public void setFluid(FluidStack fluid) {
@@ -72,45 +62,21 @@ public class CreativeSourceBlockEntity extends BlockEntity {
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, CreativeSourceBlockEntity blockEntity) {
-        if (level.isClientSide || blockEntity.storedFluid.isEmpty()) return;
+        if (level.isClientSide) return;
 
-        FluidStack fluidToTransfer = blockEntity.storedFluid.copy();
-        fluidToTransfer.setAmount(TRANSFER_AMOUNT);
+        // 获取流体类型
+        FluidStack fluidStack = blockEntity.storedFluid;
+        if (fluidStack.isEmpty()) return;
 
         // 对每个面进行处理
         for (Direction direction : Direction.values()) {
-            int currentTick = blockEntity.tickCounters.get(direction);
-            boolean isFastMode = blockEntity.fastMode.get(direction);
-            
-            currentTick++;
-            
-            int interval = isFastMode ? FAST_INTERVAL : SLOW_INTERVAL;
-            if (currentTick >= interval) {
-                currentTick = 0;
-                
-                BlockPos neighborPos = pos.relative(direction);
-                boolean success = tryTransferFluid(level, neighborPos, direction.getOpposite(), fluidToTransfer);
-                
-                blockEntity.fastMode.put(direction, success);
-            }
-            
-            blockEntity.tickCounters.put(direction, currentTick);
+            BlockPos neighborPos = pos.relative(direction);
+            tryTransferFluid(level, neighborPos, direction.getOpposite(), fluidStack);
         }
 
         blockEntity.setChanged();
     }
 
-    private static boolean tryTransferFluid(Level level, BlockPos pos, Direction direction, FluidStack fluidStack) {
-        BlockEntity be = level.getBlockEntity(pos);
-        if (be != null) {
-            LazyOptional<IFluidHandler> capability = be.getCapability(ForgeCapabilities.FLUID_HANDLER, direction);
-            return capability.map(handler -> {
-                int filled = handler.fill(fluidStack, IFluidHandler.FluidAction.EXECUTE);
-                return filled > 0;
-            }).orElse(false);
-        }
-        return false;
-    }
 
     @Override
     protected void saveAdditional(@NotNull CompoundTag tag) {
@@ -119,15 +85,6 @@ public class CreativeSourceBlockEntity extends BlockEntity {
         if (!storedFluid.isEmpty()) {
             tag.put("StoredFluid", storedFluid.writeToNBT(new CompoundTag()));
         }
-        
-        CompoundTag facesTag = new CompoundTag();
-        for (Direction direction : Direction.values()) {
-            CompoundTag faceTag = new CompoundTag();
-            faceTag.putInt("tick", tickCounters.get(direction));
-            faceTag.putBoolean("fast", fastMode.get(direction));
-            facesTag.put(direction.getName(), faceTag);
-        }
-        tag.put("faces", facesTag);
     }
 
     @Override
@@ -139,23 +96,12 @@ public class CreativeSourceBlockEntity extends BlockEntity {
         } else {
             this.storedFluid = FluidStack.EMPTY;
         }
-        
-        if (tag.contains("faces")) {
-            CompoundTag facesTag = tag.getCompound("faces");
-            for (Direction direction : Direction.values()) {
-                if (facesTag.contains(direction.getName())) {
-                    CompoundTag faceTag = facesTag.getCompound(direction.getName());
-                    tickCounters.put(direction, faceTag.getInt("tick"));
-                    fastMode.put(direction, faceTag.getBoolean("fast"));
-                }
-            }
-        }
     }
 
     // ========== 客户端同步 ==========
 
     @Override
-    public CompoundTag getUpdateTag() {
+    public @NotNull CompoundTag getUpdateTag() {
         CompoundTag tag = super.getUpdateTag();
         saveAdditional(tag);
         return tag;
