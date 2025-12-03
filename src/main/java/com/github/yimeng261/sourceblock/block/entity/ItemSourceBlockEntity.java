@@ -266,7 +266,7 @@ public class ItemSourceBlockEntity extends BlockEntity {
             }
             
             ItemStack extracted = storedItem.copy();
-            extracted.setCount(Math.min(amount, storedItem.getMaxStackSize()));
+            extracted.setCount(amount);
             return extracted;
         }
 
