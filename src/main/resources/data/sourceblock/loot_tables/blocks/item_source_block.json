@@ -35,6 +35,32 @@
             },
             {
               "type": "minecraft:item",
+              "name": "sourceblock:stone_source_block",
+              "conditions": [
+                {
+                  "condition": "minecraft:block_state_property",
+                  "block": "sourceblock:item_source_block",
+                  "properties": {
+                    "item_type": "stone"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "name": "sourceblock:smooth_stone_source_block",
+              "conditions": [
+                {
+                  "condition": "minecraft:block_state_property",
+                  "block": "sourceblock:item_source_block",
+                  "properties": {
+                    "item_type": "smooth_stone"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
               "name": "sourceblock:obsidian_source_block",
               "conditions": [
                 {

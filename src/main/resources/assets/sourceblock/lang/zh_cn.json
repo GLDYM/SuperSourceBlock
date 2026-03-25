@@ -20,6 +20,10 @@
   "item.sourceblock.empty_item_source_block.tooltip": "手持圆石或黑曜石右键来填充",
   "item.sourceblock.cobblestone_source_block": "圆石源方块",
   "item.sourceblock.cobblestone_source_block.tooltip": "无限提供圆石",
+  "item.sourceblock.stone_source_block": "石头源方块",
+  "item.sourceblock.stone_source_block.tooltip": "无限提供石头",
+  "item.sourceblock.smooth_stone_source_block": "平滑石源方块",
+  "item.sourceblock.smooth_stone_source_block.tooltip": "无限提供平滑石",
   "item.sourceblock.obsidian_source_block": "黑曜石源方块",
   "item.sourceblock.obsidian_source_block.tooltip": "无限提供黑曜石",
   "message.sourceblock.fluid_set": "已设置流体：%s",
@@ -32,4 +36,3 @@
   "jei.sourceblock.water_source_block.info": "可通过空源方块和水桶合成获得。也可以手持水桶右键点击已放置的空源方块来填充。",
   "jei.sourceblock.lava_source_block.info": "可通过空源方块和岩浆桶合成获得。也可以手持岩浆桶右键点击已放置的空源方块来填充。"
 }
-

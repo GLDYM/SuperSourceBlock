@@ -62,6 +62,8 @@ public class ItemSourceBlockEntity extends BlockEntity {
         
         return switch (itemType) {
             case COBBLESTONE -> new ItemStack(Items.COBBLESTONE, 64);
+            case STONE -> new ItemStack(Items.STONE, 64);
+            case SMOOTH_STONE -> new ItemStack(Items.SMOOTH_STONE, 64);
             case OBSIDIAN -> new ItemStack(Items.OBSIDIAN, 64);
             default -> ItemStack.EMPTY;
         };

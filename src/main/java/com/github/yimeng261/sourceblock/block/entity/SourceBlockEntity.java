@@ -137,10 +137,11 @@ public class SourceBlockEntity extends BlockEntity {
             }
         }
         
-        // 如果上面的都没找到，尝试查找任何包含"milk"的流体
+
         for (var entry : BuiltInRegistries.FLUID.entrySet()) {
             String id = entry.getKey().location().toString();
-            if (id.contains("milk") && !id.equals("minecraft:milk")) {
+            String name = id.split(":")[1];
+            if (name.equals("milk") && !id.equals("minecraft:milk")) {
                 Fluid fluid = entry.getValue();
                 if (fluid != null && fluid != Fluids.EMPTY) {
                     cachedMilkFluid = fluid;

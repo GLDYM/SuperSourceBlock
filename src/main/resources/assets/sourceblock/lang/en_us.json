@@ -20,6 +20,10 @@
   "item.sourceblock.empty_item_source_block.tooltip": "Right-click with cobblestone or obsidian to fill",
   "item.sourceblock.cobblestone_source_block": "Cobblestone Source Block",
   "item.sourceblock.cobblestone_source_block.tooltip": "Infinite cobblestone supply",
+  "item.sourceblock.stone_source_block": "Stone Source Block",
+  "item.sourceblock.stone_source_block.tooltip": "Infinite stone supply",
+  "item.sourceblock.smooth_stone_source_block": "Smooth Stone Source Block",
+  "item.sourceblock.smooth_stone_source_block.tooltip": "Infinite smooth stone supply",
   "item.sourceblock.obsidian_source_block": "Obsidian Source Block",
   "item.sourceblock.obsidian_source_block.tooltip": "Infinite obsidian supply",
   "message.sourceblock.fluid_set": "Fluid set: %s",
@@ -32,4 +36,3 @@
   "jei.sourceblock.water_source_block.info": "Can be crafted with an Empty Source Block and a Water Bucket. Alternatively, right-click a placed Empty Source Block with a Water Bucket to fill it.",
   "jei.sourceblock.lava_source_block.info": "Can be crafted with an Empty Source Block and a Lava Bucket. Alternatively, right-click a placed Empty Source Block with a Lava Bucket to fill it."
 }
-

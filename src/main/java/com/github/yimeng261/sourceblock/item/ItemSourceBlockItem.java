@@ -46,6 +46,8 @@ public class ItemSourceBlockItem extends BlockItem {
         return switch (this.itemType) {
             case EMPTY -> "item.sourceblock.empty_item_source_block";
             case COBBLESTONE -> "item.sourceblock.cobblestone_source_block";
+            case STONE -> "item.sourceblock.stone_source_block";
+            case SMOOTH_STONE -> "item.sourceblock.smooth_stone_source_block";
             case OBSIDIAN -> "item.sourceblock.obsidian_source_block";
         };
     }

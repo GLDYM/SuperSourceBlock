@@ -46,9 +46,16 @@ public class ModItems {
         () -> new ItemSourceBlockItem(ModBlocks.ITEM_SOURCE_BLOCK.get(), 
             new Item.Properties(), ItemSourceBlock.ItemType.COBBLESTONE));
 
+    public static final RegistryObject<BlockItem> STONE_SOURCE_BLOCK = ITEMS.register("stone_source_block",
+        () -> new ItemSourceBlockItem(ModBlocks.ITEM_SOURCE_BLOCK.get(),
+            new Item.Properties(), ItemSourceBlock.ItemType.STONE));
+
+    public static final RegistryObject<BlockItem> SMOOTH_STONE_SOURCE_BLOCK = ITEMS.register("smooth_stone_source_block",
+        () -> new ItemSourceBlockItem(ModBlocks.ITEM_SOURCE_BLOCK.get(),
+            new Item.Properties(), ItemSourceBlock.ItemType.SMOOTH_STONE));
+
     public static final RegistryObject<BlockItem> OBSIDIAN_SOURCE_BLOCK = ITEMS.register("obsidian_source_block",
         () -> new ItemSourceBlockItem(ModBlocks.ITEM_SOURCE_BLOCK.get(), 
             new Item.Properties(), ItemSourceBlock.ItemType.OBSIDIAN));
 }
-
 

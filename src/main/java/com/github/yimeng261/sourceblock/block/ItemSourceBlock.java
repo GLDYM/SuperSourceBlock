@@ -56,6 +56,16 @@ public class ItemSourceBlock extends BaseEntityBlock {
                     player.addItem(new ItemStack(Items.COBBLESTONE));
                 }
                 return InteractionResult.sidedSuccess(level.isClientSide);
+            } else if (currentType == ItemType.STONE) {
+                if (!level.isClientSide && !player.isCreative()) {
+                    player.addItem(new ItemStack(Items.STONE));
+                }
+                return InteractionResult.sidedSuccess(level.isClientSide);
+            } else if (currentType == ItemType.SMOOTH_STONE) {
+                if (!level.isClientSide && !player.isCreative()) {
+                    player.addItem(new ItemStack(Items.SMOOTH_STONE));
+                }
+                return InteractionResult.sidedSuccess(level.isClientSide);
             } else if (currentType == ItemType.OBSIDIAN) {
                 if (!level.isClientSide && !player.isCreative()) {
                     player.addItem(new ItemStack(Items.OBSIDIAN));
@@ -96,6 +106,8 @@ public class ItemSourceBlock extends BaseEntityBlock {
         ItemType itemType = state.getValue(ITEM_TYPE);
         return switch (itemType) {
             case COBBLESTONE -> ModItems.COBBLESTONE_SOURCE_BLOCK.get();
+            case STONE -> ModItems.STONE_SOURCE_BLOCK.get();
+            case SMOOTH_STONE -> ModItems.SMOOTH_STONE_SOURCE_BLOCK.get();
             case OBSIDIAN -> ModItems.OBSIDIAN_SOURCE_BLOCK.get();
             default -> ModItems.EMPTY_ITEM_SOURCE_BLOCK.get();
         };
@@ -111,6 +123,8 @@ public class ItemSourceBlock extends BaseEntityBlock {
     public enum ItemType implements StringRepresentable {
         EMPTY("empty"),
         COBBLESTONE("cobblestone"),
+        STONE("stone"),
+        SMOOTH_STONE("smooth_stone"),
         OBSIDIAN("obsidian");
 
         private final String name;
