@@ -127,11 +127,14 @@ configurations {
 
 dependencies {
     // Mekanism作为可选依赖（编译时需要，运行时可选）
-    compileOnly "curse.maven:mekanism-268560:7132168"
     compileOnly "curse.maven:jei-238222:7229074"
+    runtimeOnly "curse.maven:jei-238222:7229074"
 
-    localRuntime "curse.maven:jei-238222:7229074"
-    localRuntime "curse.maven:mekanism-268560:7132168"
+    compileOnly "curse.maven:mekanism-268560:7132168"
+    runtimeOnly "curse.maven:mekanism-268560:7132168"
+
+    // runtime tools
+    runtimeOnly "curse.maven:jade-324717:7545219"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

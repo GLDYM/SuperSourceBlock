@@ -1,0 +1,27 @@
+{
+  "itemGroup.super_source_block": "Super Source Block",
+
+  "block.super_source_block.empty_fluid_source_block": "Empty Fluid Source Block",
+  "block.super_source_block.super_fluid_source_block": "Super Fluid Source Block",
+  "block.super_source_block.empty_item_source_block": "Empty Item Source Block",
+  "block.super_source_block.super_item_source_block": "Super Item Source Block",
+
+  "item.super_source_block.empty_fluid_source_block": "Empty Fluid Source Block",
+  "item.super_source_block.super_fluid_source_block": "Super Fluid Source Block",
+  "item.super_source_block.empty_item_source_block": "Empty Item Source Block",
+  "item.super_source_block.super_item_source_block": "Super Item Source Block",
+
+  "item.super_source_block.empty_item_source_block.tooltip": "Accepts 1024 of one item type (configurable) then transforms",
+
+  "jei.super_source_block.empty_fluid_source_block.info": "Accepts one fluid type only. Fill it with the configured amount (default: 256 buckets) to upgrade.",
+  "jei.super_source_block.super_fluid_source_block.info": "Upgraded fluid source with massive output and capacity. Keeps block entity NBT when broken.",
+  "jei.super_source_block.empty_item_source_block.info": "Accepts one item type only. Insert the configured amount (default: 1024 items) to upgrade.",
+  "jei.super_source_block.super_item_source_block.info": "Upgraded item source with massive output. Keeps block entity NBT when broken.",
+
+  "tooltip.super_source_block.stored_fluid": "Stored Fluid: %s (%s mB)",
+  "tooltip.super_source_block.stored_item": "Stored Item: %s x%s",
+  "tooltip.super_source_block.stored_empty": "Stored: Empty",
+
+  "super_source_block.info.mekanism_loaded": "Mekanism detected, gas handling enabled",
+  "super_source_block.info.mekanism_not_loaded": "Mekanism not detected, gas handling disabled"
+}

@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "": { "model": "super_source_block:block/empty_fluid_source_block" }
+  }
+}
+

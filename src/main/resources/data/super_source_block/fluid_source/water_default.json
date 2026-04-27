@@ -1,0 +1,8 @@
+{
+  "type": "super_source_block:fluid_source",
+  "fluid": "minecraft:water",
+  "amount": 256000,
+  "output_amount": 25600,
+  "interval": 1,
+  "max_output": true
+}

@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "": { "model": "super_source_block:block/super_fluid_source_block" }
+  }
+}
+

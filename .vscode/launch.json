@@ -6,17 +6,17 @@
       "request": "launch",
       "name": "Client",
       "presentation": {
-        "group": "Mod Development - source_block",
+        "group": "Mod Development - SuperSourceBlock",
         "order": 0
       },
-      "projectName": "source_block",
+      "projectName": "SuperSourceBlock",
       "mainClass": "net.neoforged.devlaunch.Main",
       "args": [
-        "@E:\\Desktop\\脆骨症dlc\\mod开发\\source_block\\build\\moddev\\clientRunProgramArgs.txt"
+        "@D:\\Git\\SuperSourceBlock\\build\\moddev\\clientRunProgramArgs.txt"
       ],
       "vmArgs": [
-        "@E:\\Desktop\\脆骨症dlc\\mod开发\\source_block\\build\\moddev\\clientRunVmArgs.txt",
-        "-Dfml.modFolders\u003dsourceblock%%E:\\Desktop\\脆骨症dlc\\mod开发\\source_block\\bin\\main"
+        "@D:\\Git\\SuperSourceBlock\\build\\moddev\\clientRunVmArgs.txt",
+        "-Dfml.modFolders\u003dsuper_source_block%%D:\\Git\\SuperSourceBlock\\bin\\main"
       ],
       "cwd": "${workspaceFolder}\\run",
       "env": {},
@@ -28,17 +28,17 @@
       "request": "launch",
       "name": "Data",
       "presentation": {
-        "group": "Mod Development - source_block",
+        "group": "Mod Development - SuperSourceBlock",
         "order": 1
       },
-      "projectName": "source_block",
+      "projectName": "SuperSourceBlock",
       "mainClass": "net.neoforged.devlaunch.Main",
       "args": [
-        "@E:\\Desktop\\脆骨症dlc\\mod开发\\source_block\\build\\moddev\\dataRunProgramArgs.txt"
+        "@D:\\Git\\SuperSourceBlock\\build\\moddev\\dataRunProgramArgs.txt"
       ],
       "vmArgs": [
-        "@E:\\Desktop\\脆骨症dlc\\mod开发\\source_block\\build\\moddev\\dataRunVmArgs.txt",
-        "-Dfml.modFolders\u003dsourceblock%%E:\\Desktop\\脆骨症dlc\\mod开发\\source_block\\bin\\main"
+        "@D:\\Git\\SuperSourceBlock\\build\\moddev\\dataRunVmArgs.txt",
+        "-Dfml.modFolders\u003dsuper_source_block%%D:\\Git\\SuperSourceBlock\\bin\\main"
       ],
       "cwd": "${workspaceFolder}\\run",
       "env": {},
@@ -50,17 +50,17 @@
       "request": "launch",
       "name": "GameTestServer",
       "presentation": {
-        "group": "Mod Development - source_block",
+        "group": "Mod Development - SuperSourceBlock",
         "order": 2
       },
-      "projectName": "source_block",
+      "projectName": "SuperSourceBlock",
       "mainClass": "net.neoforged.devlaunch.Main",
       "args": [
-        "@E:\\Desktop\\脆骨症dlc\\mod开发\\source_block\\build\\moddev\\gameTestServerRunProgramArgs.txt"
+        "@D:\\Git\\SuperSourceBlock\\build\\moddev\\gameTestServerRunProgramArgs.txt"
       ],
       "vmArgs": [
-        "@E:\\Desktop\\脆骨症dlc\\mod开发\\source_block\\build\\moddev\\gameTestServerRunVmArgs.txt",
-        "-Dfml.modFolders\u003dsourceblock%%E:\\Desktop\\脆骨症dlc\\mod开发\\source_block\\bin\\main"
+        "@D:\\Git\\SuperSourceBlock\\build\\moddev\\gameTestServerRunVmArgs.txt",
+        "-Dfml.modFolders\u003dsuper_source_block%%D:\\Git\\SuperSourceBlock\\bin\\main"
       ],
       "cwd": "${workspaceFolder}\\run",
       "env": {},
@@ -72,17 +72,17 @@
       "request": "launch",
       "name": "Server",
       "presentation": {
-        "group": "Mod Development - source_block",
+        "group": "Mod Development - SuperSourceBlock",
         "order": 3
       },
-      "projectName": "source_block",
+      "projectName": "SuperSourceBlock",
       "mainClass": "net.neoforged.devlaunch.Main",
       "args": [
-        "@E:\\Desktop\\脆骨症dlc\\mod开发\\source_block\\build\\moddev\\serverRunProgramArgs.txt"
+        "@D:\\Git\\SuperSourceBlock\\build\\moddev\\serverRunProgramArgs.txt"
       ],
       "vmArgs": [
-        "@E:\\Desktop\\脆骨症dlc\\mod开发\\source_block\\build\\moddev\\serverRunVmArgs.txt",
-        "-Dfml.modFolders\u003dsourceblock%%E:\\Desktop\\脆骨症dlc\\mod开发\\source_block\\bin\\main"
+        "@D:\\Git\\SuperSourceBlock\\build\\moddev\\serverRunVmArgs.txt",
+        "-Dfml.modFolders\u003dsuper_source_block%%D:\\Git\\SuperSourceBlock\\bin\\main"
       ],
       "cwd": "${workspaceFolder}\\run",
       "env": {},

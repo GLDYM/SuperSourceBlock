@@ -1,0 +1,8 @@
+{
+  "type": "super_source_block:item_source",
+  "item": "minecraft:cobblestone",
+  "amount": 1024,
+  "output_amount": 1024,
+  "interval": 20,
+  "max_output": false
+}

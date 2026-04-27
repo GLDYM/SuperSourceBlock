@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/glass",
+  "render_type": "minecraft:translucent",
+  "textures": {
+    "all": "super_source_block:block/empty_item_source_block"
+  }
+}
