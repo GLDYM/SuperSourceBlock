@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class SuperFluidSourceBlockEntity extends net.minecraft.world.level.block.entity.BlockEntity implements IFluidHandler {
     private static final String STORED_FLUID_KEY = "StoredFluid";
+    private static final String STORED_AMOUNT_KEY = "StoredAmount";
     private static final String CUSTOM_OUTPUT_AMOUNT_KEY = "CustomOutputAmount";
     private static final String DIRECTION_CURSOR_KEY = "DirectionCursor";
     private static final String CUSTOM_INTERVAL_TICKS_KEY = "CustomIntervalTicks";
@@ -27,6 +28,7 @@ public class SuperFluidSourceBlockEntity extends net.minecraft.world.level.block
     };
 
     private FluidStack storedFluid = FluidStack.EMPTY;
+    private int storedAmount = 0;
     private int customOutputAmount = -1;
     private int customIntervalTicks = -1;
     private int directionCursor = 0;
@@ -37,7 +39,8 @@ public class SuperFluidSourceBlockEntity extends net.minecraft.world.level.block
     }
 
     public void setStoredFluid(FluidStack fluid) {
-        this.storedFluid = fluid.isEmpty() ? FluidStack.EMPTY : fluid.copyWithAmount(Integer.MAX_VALUE);
+        this.storedFluid = fluid.isEmpty() ? FluidStack.EMPTY : fluid.copyWithAmount(1);
+        this.storedAmount = 0;
         setChangedAndSync();
     }
 
@@ -72,11 +75,16 @@ public class SuperFluidSourceBlockEntity extends net.minecraft.world.level.block
         }
         blockEntity.tickCounter = 0;
 
-        int remaining = blockEntity.getOutputAmount();
+        int outputAmount = blockEntity.getOutputAmount();
+        int remaining = blockEntity.isIntegerMaxOutput() ? outputAmount : saturatedAdd(blockEntity.storedAmount, outputAmount);
         for (int i = 0; i < OUTPUT_ORDER.length && remaining > 0; i++) {
             Direction direction = OUTPUT_ORDER[(blockEntity.directionCursor + i) % OUTPUT_ORDER.length];
             int transferred = tryTransferFluid(level, pos.relative(direction), direction.getOpposite(), blockEntity.storedFluid, remaining);
             remaining -= transferred;
+        }
+        if (!blockEntity.isIntegerMaxOutput() && blockEntity.storedAmount != remaining) {
+            blockEntity.storedAmount = remaining;
+            blockEntity.setChangedAndSync();
         }
         blockEntity.directionCursor = (blockEntity.directionCursor + 1) % OUTPUT_ORDER.length;
     }
@@ -87,6 +95,15 @@ public class SuperFluidSourceBlockEntity extends net.minecraft.world.level.block
 
     private int getIntervalTicks() {
         return this.customIntervalTicks > 0 ? this.customIntervalTicks : SuperSourceConfig.superFluidOutputIntervalTicks();
+    }
+
+    private boolean isIntegerMaxOutput() {
+        return getOutputAmount() == Integer.MAX_VALUE;
+    }
+
+    private static int saturatedAdd(int first, int second) {
+        long result = (long) first + second;
+        return result >= Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) result;
     }
 
     private static int tryTransferFluid(Level level, BlockPos targetPos, Direction side, FluidStack stored, int outputAmount) {
@@ -108,12 +125,18 @@ public class SuperFluidSourceBlockEntity extends net.minecraft.world.level.block
         if (tank != 0 || this.storedFluid.isEmpty()) {
             return FluidStack.EMPTY;
         }
-        return this.storedFluid.copyWithAmount(Integer.MAX_VALUE);
+        if (isIntegerMaxOutput()) {
+            return this.storedFluid.copyWithAmount(Integer.MAX_VALUE);
+        }
+        return this.storedAmount > 0 ? this.storedFluid.copyWithAmount(this.storedAmount) : FluidStack.EMPTY;
     }
 
     @Override
     public int getTankCapacity(int tank) {
-        return tank == 0 ? Integer.MAX_VALUE : 0;
+        if (tank != 0) {
+            return 0;
+        }
+        return isIntegerMaxOutput() ? Integer.MAX_VALUE : Math.max(this.storedAmount, getOutputAmount());
     }
 
     @Override
@@ -131,7 +154,7 @@ public class SuperFluidSourceBlockEntity extends net.minecraft.world.level.block
         if (resource.isEmpty() || this.storedFluid.isEmpty() || !this.storedFluid.is(resource.getFluid())) {
             return FluidStack.EMPTY;
         }
-        return this.storedFluid.copyWithAmount(resource.getAmount());
+        return drain(resource.getAmount(), action);
     }
 
     @Override
@@ -139,7 +162,16 @@ public class SuperFluidSourceBlockEntity extends net.minecraft.world.level.block
         if (maxDrain <= 0 || this.storedFluid.isEmpty()) {
             return FluidStack.EMPTY;
         }
-        return this.storedFluid.copyWithAmount(maxDrain);
+        int drainedAmount = isIntegerMaxOutput() ? maxDrain : Math.min(maxDrain, this.storedAmount);
+        if (drainedAmount <= 0) {
+            return FluidStack.EMPTY;
+        }
+        FluidStack drained = this.storedFluid.copyWithAmount(drainedAmount);
+        if (action.execute() && !isIntegerMaxOutput()) {
+            this.storedAmount -= drainedAmount;
+            setChangedAndSync();
+        }
+        return drained;
     }
 
     @Override
@@ -147,6 +179,9 @@ public class SuperFluidSourceBlockEntity extends net.minecraft.world.level.block
         super.saveAdditional(tag, registries);
         if (!this.storedFluid.isEmpty()) {
             tag.put(STORED_FLUID_KEY, this.storedFluid.save(registries));
+            if (this.storedAmount > 0) {
+                tag.putInt(STORED_AMOUNT_KEY, this.storedAmount);
+            }
         }
         if (this.customOutputAmount > 0) {
             tag.putInt(CUSTOM_OUTPUT_AMOUNT_KEY, this.customOutputAmount);
@@ -164,10 +199,14 @@ public class SuperFluidSourceBlockEntity extends net.minecraft.world.level.block
         if (tag.contains(STORED_FLUID_KEY)) {
             this.storedFluid = FluidStack.parse(registries, tag.getCompound(STORED_FLUID_KEY)).orElse(FluidStack.EMPTY);
             if (!this.storedFluid.isEmpty()) {
-                this.storedFluid.setAmount(Integer.MAX_VALUE);
+                this.storedFluid.setAmount(1);
+                this.storedAmount = Math.max(0, tag.getInt(STORED_AMOUNT_KEY));
+            } else {
+                this.storedAmount = 0;
             }
         } else {
             this.storedFluid = FluidStack.EMPTY;
+            this.storedAmount = 0;
         }
         this.customOutputAmount = tag.contains(CUSTOM_OUTPUT_AMOUNT_KEY) ? tag.getInt(CUSTOM_OUTPUT_AMOUNT_KEY) : -1;
         this.customIntervalTicks = tag.contains(CUSTOM_INTERVAL_TICKS_KEY) ? tag.getInt(CUSTOM_INTERVAL_TICKS_KEY) : -1;

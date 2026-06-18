@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class SuperItemSourceBlockEntity extends BlockEntity implements IItemHandler {
     private static final String STORED_ITEM_KEY = "StoredItem";
+    private static final String STORED_COUNT_KEY = "StoredCount";
     private static final String CUSTOM_OUTPUT_AMOUNT_KEY = "CustomOutputAmount";
     private static final String DIRECTION_CURSOR_KEY = "DirectionCursor";
     private static final String CUSTOM_INTERVAL_TICKS_KEY = "CustomIntervalTicks";
@@ -28,6 +29,7 @@ public class SuperItemSourceBlockEntity extends BlockEntity implements IItemHand
     };
 
     private ItemStack storedItem = ItemStack.EMPTY;
+    private int storedCount = 0;
     private int customOutputAmount = -1;
     private int customIntervalTicks = -1;
     private int directionCursor = 0;
@@ -39,6 +41,7 @@ public class SuperItemSourceBlockEntity extends BlockEntity implements IItemHand
 
     public void setStoredItem(ItemStack stack) {
         this.storedItem = stack.isEmpty() ? ItemStack.EMPTY : stack.copyWithCount(1);
+        this.storedCount = 0;
         setChangedAndSync();
     }
 
@@ -73,11 +76,16 @@ public class SuperItemSourceBlockEntity extends BlockEntity implements IItemHand
         }
         blockEntity.tickCounter = 0;
 
-        int remaining = blockEntity.getOutputAmount();
+        int outputAmount = blockEntity.getOutputAmount();
+        int remaining = blockEntity.isIntegerMaxOutput() ? outputAmount : saturatedAdd(blockEntity.storedCount, outputAmount);
         for (int i = 0; i < OUTPUT_ORDER.length && remaining > 0; i++) {
             Direction direction = OUTPUT_ORDER[(blockEntity.directionCursor + i) % OUTPUT_ORDER.length];
             int inserted = tryTransferItem(level, pos.relative(direction), direction.getOpposite(), blockEntity.storedItem, remaining);
             remaining -= inserted;
+        }
+        if (!blockEntity.isIntegerMaxOutput() && blockEntity.storedCount != remaining) {
+            blockEntity.storedCount = remaining;
+            blockEntity.setChangedAndSync();
         }
         blockEntity.directionCursor = (blockEntity.directionCursor + 1) % OUTPUT_ORDER.length;
     }
@@ -88,6 +96,15 @@ public class SuperItemSourceBlockEntity extends BlockEntity implements IItemHand
 
     private int getIntervalTicks() {
         return this.customIntervalTicks > 0 ? this.customIntervalTicks : SuperSourceConfig.superItemOutputIntervalTicks();
+    }
+
+    private boolean isIntegerMaxOutput() {
+        return getOutputAmount() == Integer.MAX_VALUE;
+    }
+
+    private static int saturatedAdd(int first, int second) {
+        long result = (long) first + second;
+        return result >= Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) result;
     }
 
     private static int tryTransferItem(Level level, BlockPos targetPos, Direction side, ItemStack stored, int outputAmount) {
@@ -121,7 +138,10 @@ public class SuperItemSourceBlockEntity extends BlockEntity implements IItemHand
         if (slot != 0 || this.storedItem.isEmpty()) {
             return ItemStack.EMPTY;
         }
-        return this.storedItem.copyWithCount(Integer.MAX_VALUE);
+        if (isIntegerMaxOutput()) {
+            return this.storedItem.copyWithCount(Integer.MAX_VALUE);
+        }
+        return this.storedCount > 0 ? this.storedItem.copyWithCount(this.storedCount) : ItemStack.EMPTY;
     }
 
     @Override
@@ -134,12 +154,25 @@ public class SuperItemSourceBlockEntity extends BlockEntity implements IItemHand
         if (slot != 0 || amount <= 0 || this.storedItem.isEmpty()) {
             return ItemStack.EMPTY;
         }
-        return this.storedItem.copyWithCount(Math.min(amount, this.storedItem.getMaxStackSize()));
+        int extracted = isIntegerMaxOutput() ? amount : Math.min(amount, this.storedCount);
+        extracted = Math.min(extracted, this.storedItem.getMaxStackSize());
+        if (extracted <= 0) {
+            return ItemStack.EMPTY;
+        }
+        ItemStack out = this.storedItem.copyWithCount(extracted);
+        if (!simulate && !isIntegerMaxOutput()) {
+            this.storedCount -= extracted;
+            setChangedAndSync();
+        }
+        return out;
     }
 
     @Override
     public int getSlotLimit(int slot) {
-        return slot == 0 ? Integer.MAX_VALUE : 0;
+        if (slot != 0) {
+            return 0;
+        }
+        return isIntegerMaxOutput() ? Integer.MAX_VALUE : Math.max(this.storedCount, getOutputAmount());
     }
 
     @Override
@@ -152,6 +185,9 @@ public class SuperItemSourceBlockEntity extends BlockEntity implements IItemHand
         super.saveAdditional(tag, registries);
         if (!this.storedItem.isEmpty()) {
             tag.put(STORED_ITEM_KEY, this.storedItem.save(registries));
+            if (this.storedCount > 0) {
+                tag.putInt(STORED_COUNT_KEY, this.storedCount);
+            }
         }
         if (this.customOutputAmount > 0) {
             tag.putInt(CUSTOM_OUTPUT_AMOUNT_KEY, this.customOutputAmount);
@@ -170,9 +206,13 @@ public class SuperItemSourceBlockEntity extends BlockEntity implements IItemHand
             this.storedItem = ItemStack.parse(registries, tag.getCompound(STORED_ITEM_KEY)).orElse(ItemStack.EMPTY);
             if (!this.storedItem.isEmpty()) {
                 this.storedItem.setCount(1);
+                this.storedCount = Math.max(0, tag.getInt(STORED_COUNT_KEY));
+            } else {
+                this.storedCount = 0;
             }
         } else {
             this.storedItem = ItemStack.EMPTY;
+            this.storedCount = 0;
         }
         this.customOutputAmount = tag.contains(CUSTOM_OUTPUT_AMOUNT_KEY) ? tag.getInt(CUSTOM_OUTPUT_AMOUNT_KEY) : -1;
         this.customIntervalTicks = tag.contains(CUSTOM_INTERVAL_TICKS_KEY) ? tag.getInt(CUSTOM_INTERVAL_TICKS_KEY) : -1;

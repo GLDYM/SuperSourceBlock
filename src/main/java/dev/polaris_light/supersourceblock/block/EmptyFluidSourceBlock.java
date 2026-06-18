@@ -2,21 +2,15 @@ package dev.polaris_light.supersourceblock.block;
 
 import com.mojang.serialization.MapCodec;
 import dev.polaris_light.supersourceblock.block.entity.EmptyFluidSourceBlockEntity;
-import dev.polaris_light.supersourceblock.block.entity.ModBlockEntities;
 import dev.polaris_light.supersourceblock.item.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.BucketItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -25,12 +19,12 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -67,30 +61,53 @@ public class EmptyFluidSourceBlock extends BaseEntityBlock {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
-        Item item = stack.getItem();
-        if (item instanceof BucketItem bucketItem) {
-            Fluid fluid = bucketItem.content;
-            if (fluid != Fluids.EMPTY) {
-                int accepted = blockEntity.fill(new FluidStack(fluid, 1000), IFluidHandler.FluidAction.EXECUTE);
-                if (accepted == 1000) {
-                    if (!player.isCreative()) {
-                        stack.shrink(1);
-                        player.addItem(new ItemStack(Items.BUCKET));
+        ItemStack single = stack.copyWithCount(1);
+        IFluidHandlerItem fluidHandler = FluidUtil.getFluidHandler(single).orElse(null);
+        if (fluidHandler != null) {
+            FluidStack fromItem = fluidHandler.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE);
+            if (!fromItem.isEmpty()) {
+                int accepted = blockEntity.fill(fromItem, IFluidHandler.FluidAction.SIMULATE);
+                if (accepted > 0) {
+                    FluidStack toMove = fromItem.copyWithAmount(Math.min(fromItem.getAmount(), accepted));
+                    FluidStack executedDrain = fluidHandler.drain(toMove, IFluidHandler.FluidAction.EXECUTE);
+                    int executedFill = blockEntity.fill(executedDrain, IFluidHandler.FluidAction.EXECUTE);
+                    if (executedFill > 0) {
+                        if (!player.isCreative()) {
+                            ItemStack container = fluidHandler.getContainer();
+                            if (stack.getCount() == 1) {
+                                player.setItemInHand(hand, container);
+                            } else {
+                                stack.shrink(1);
+                                player.addItem(container);
+                            }
+                        }
+                        return ItemInteractionResult.sidedSuccess(level.isClientSide);
                     }
-                    return ItemInteractionResult.sidedSuccess(level.isClientSide);
+                    return ItemInteractionResult.FAIL;
                 }
-                return ItemInteractionResult.FAIL;
             }
-        }
 
-        if (stack.is(Items.BUCKET)) {
-            FluidStack drained = blockEntity.drain(1000, IFluidHandler.FluidAction.EXECUTE);
-            if (drained.getAmount() == 1000 && drained.getFluid().getBucket() != Items.AIR) {
-                if (!player.isCreative()) {
-                    stack.shrink(1);
-                    player.addItem(new ItemStack(drained.getFluid().getBucket()));
+            FluidStack fromBlock = blockEntity.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE);
+            if (!fromBlock.isEmpty()) {
+                int accepted = fluidHandler.fill(fromBlock, IFluidHandler.FluidAction.SIMULATE);
+                if (accepted > 0) {
+                    FluidStack toMove = fromBlock.copyWithAmount(Math.min(fromBlock.getAmount(), accepted));
+                    FluidStack executedDrain = blockEntity.drain(toMove, IFluidHandler.FluidAction.EXECUTE);
+                    int executedFill = fluidHandler.fill(executedDrain, IFluidHandler.FluidAction.EXECUTE);
+                    if (executedFill > 0) {
+                        if (!player.isCreative()) {
+                            ItemStack container = fluidHandler.getContainer();
+                            if (stack.getCount() == 1) {
+                                player.setItemInHand(hand, container);
+                            } else {
+                                stack.shrink(1);
+                                player.addItem(container);
+                            }
+                        }
+                        return ItemInteractionResult.sidedSuccess(level.isClientSide);
+                    }
+                    return ItemInteractionResult.FAIL;
                 }
-                return ItemInteractionResult.sidedSuccess(level.isClientSide);
             }
         }
 
