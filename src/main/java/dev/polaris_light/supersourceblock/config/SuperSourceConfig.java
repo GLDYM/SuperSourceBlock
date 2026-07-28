@@ -1,5 +1,8 @@
 package dev.polaris_light.supersourceblock.config;
 
+import java.util.List;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 public final class SuperSourceConfig {
@@ -14,6 +17,10 @@ public final class SuperSourceConfig {
     private static final ModConfigSpec.IntValue SUPER_ITEM_OUTPUT_AMOUNT;
     private static final ModConfigSpec.IntValue SUPER_FLUID_OUTPUT_INTERVAL_TICKS;
     private static final ModConfigSpec.IntValue SUPER_ITEM_OUTPUT_INTERVAL_TICKS;
+    private static final ModConfigSpec.ConfigValue<List<? extends String>> ITEM_BLACKLIST;
+    private static final ModConfigSpec.ConfigValue<List<? extends String>> ITEM_WHITELIST;
+    private static final ModConfigSpec.ConfigValue<List<? extends String>> FLUID_BLACKLIST;
+    private static final ModConfigSpec.ConfigValue<List<? extends String>> FLUID_WHITELIST;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -47,6 +54,18 @@ public final class SuperSourceConfig {
         SUPER_ITEM_OUTPUT_INTERVAL_TICKS = builder
             .comment("Output interval of super item source in ticks.")
             .defineInRange("super_item_output_interval_ticks", 20, 1, Integer.MAX_VALUE);
+        ITEM_BLACKLIST = builder
+            .comment("Item blacklist. Supports item ids like 'minecraft:stone' and tags like '#c:stones'. Blacklist has priority over whitelist.")
+            .defineListAllowEmpty("item_blacklist", List.of(), () -> "", SuperSourceConfig::isStringValue);
+        ITEM_WHITELIST = builder
+            .comment("Item whitelist. Empty means allow all items not blocked by the blacklist. Supports item ids and '#tag' entries.")
+            .defineListAllowEmpty("item_whitelist", List.of(), () -> "", SuperSourceConfig::isStringValue);
+        FLUID_BLACKLIST = builder
+            .comment("Fluid blacklist. Supports fluid ids like 'minecraft:water' and tags like '#c:water'. Blacklist has priority over whitelist.")
+            .defineListAllowEmpty("fluid_blacklist", List.of(), () -> "", SuperSourceConfig::isStringValue);
+        FLUID_WHITELIST = builder
+            .comment("Fluid whitelist. Empty means allow all fluids not blocked by the blacklist. Supports fluid ids and '#tag' entries.")
+            .defineListAllowEmpty("fluid_whitelist", List.of(), () -> "", SuperSourceConfig::isStringValue);
         SPEC = builder.build();
     }
 
@@ -101,5 +120,31 @@ public final class SuperSourceConfig {
 
     public static int superItemOutputIntervalTicks() {
         return SUPER_ITEM_OUTPUT_INTERVAL_TICKS.get();
+    }
+
+    public static boolean isItemAllowed(ItemStack stack) {
+        if (stack.isEmpty()) {
+            return false;
+        }
+        if (ConfigListMatcher.matchesItem(stack, ITEM_BLACKLIST.get())) {
+            return false;
+        }
+        List<? extends String> whitelist = ITEM_WHITELIST.get();
+        return whitelist.isEmpty() || ConfigListMatcher.matchesItem(stack, whitelist);
+    }
+
+    public static boolean isFluidAllowed(FluidStack stack) {
+        if (stack.isEmpty()) {
+            return false;
+        }
+        if (ConfigListMatcher.matchesFluid(stack, FLUID_BLACKLIST.get())) {
+            return false;
+        }
+        List<? extends String> whitelist = FLUID_WHITELIST.get();
+        return whitelist.isEmpty() || ConfigListMatcher.matchesFluid(stack, whitelist);
+    }
+
+    private static boolean isStringValue(Object value) {
+        return value instanceof String;
     }
 }

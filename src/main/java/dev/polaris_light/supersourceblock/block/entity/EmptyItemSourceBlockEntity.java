@@ -45,7 +45,8 @@ public class EmptyItemSourceBlockEntity extends BlockEntity implements IItemHand
     }
 
     private boolean canAccept(ItemStack stack) {
-        return this.storedItem.isEmpty() || ItemStack.isSameItemSameComponents(this.storedItem, stack);
+        return SuperSourceConfig.isItemAllowed(stack)
+            && (this.storedItem.isEmpty() || ItemStack.isSameItemSameComponents(this.storedItem, stack));
     }
 
     private void setChangedAndSync() {

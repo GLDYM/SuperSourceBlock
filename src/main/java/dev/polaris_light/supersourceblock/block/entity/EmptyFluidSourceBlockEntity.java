@@ -85,7 +85,8 @@ public class EmptyFluidSourceBlockEntity extends BlockEntity implements IFluidHa
         if (tank != 0 || stack.isEmpty()) {
             return false;
         }
-        return this.storedFluid.isEmpty() || this.storedFluid.is(stack.getFluid());
+        return SuperSourceConfig.isFluidAllowed(stack)
+            && (this.storedFluid.isEmpty() || this.storedFluid.is(stack.getFluid()));
     }
 
     @Override
