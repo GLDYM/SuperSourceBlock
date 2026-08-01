@@ -5,11 +5,15 @@
   "block.super_source_block.super_fluid_source_block": "超级流体源方块",
   "block.super_source_block.empty_item_source_block": "空物品源方块",
   "block.super_source_block.super_item_source_block": "超级物品源方块",
+  "block.super_source_block.empty_chemical_source_block": "空化学品源方块",
+  "block.super_source_block.super_chemical_source_block": "超级化学品源方块",
 
   "item.super_source_block.empty_fluid_source_block": "空流体源方块",
   "item.super_source_block.super_fluid_source_block": "超级流体源方块",
   "item.super_source_block.empty_item_source_block": "空物品源方块",
   "item.super_source_block.super_item_source_block": "超级物品源方块",
+  "item.super_source_block.empty_chemical_source_block": "空化学品源方块",
+  "item.super_source_block.super_chemical_source_block": "超级化学品源方块",
 
   "item.super_source_block.empty_item_source_block.tooltip": "接受同类物品（默认 1024 个，可配置）后转化",
 
@@ -17,9 +21,11 @@
   "jei.super_source_block.super_fluid_source_block.info": "升级后的流体源方块，容量与输出极高。破坏时保留方块实体 NBT。",
   "jei.super_source_block.empty_item_source_block.info": "仅接受一种物品。填充达到配置数量（默认 1024 个）后转化。",
   "jei.super_source_block.super_item_source_block.info": "升级后的物品源方块，输出极高。破坏时保留方块实体 NBT。",
+  "jei.super_source_block.empty_chemical_source_block.info": "仅接受一种 Mekanism 化学品。填充达到配置数量后转化。",
+  "jei.super_source_block.super_chemical_source_block.info": "升级后的化学品源方块，输出极高。破坏时保留方块实体 NBT。",
 
   "tooltip.super_source_block.stored_fluid": "已存流体：%s（%s mB）",
   "tooltip.super_source_block.stored_item": "已存物品：%s x%s",
+  "tooltip.super_source_block.stored_chemical": "已存化学品：%s（%s）",
   "tooltip.super_source_block.stored_empty": "已存内容：空"
 }
-

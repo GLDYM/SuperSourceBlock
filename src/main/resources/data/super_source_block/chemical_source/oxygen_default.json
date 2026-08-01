@@ -1,0 +1,8 @@
+{
+  "type": "super_source_block:chemical_source",
+  "chemical": "mekanism:oxygen",
+  "amount": 4096,
+  "output_amount": 256,
+  "interval": 1,
+  "max_output": true
+}

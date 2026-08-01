@@ -3,6 +3,7 @@ package dev.polaris_light.supersourceblock.data;
 import dev.polaris_light.supersourceblock.config.SuperSourceConfig;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -39,7 +40,7 @@ public final class SourceRecipeManager {
             if (rule.hasFluid() && rule.fluid() == fluid) {
                 return rule;
             }
-            if (rule.hasTag() && fluid.builtInRegistryHolder().is(rule.fluidTag())) {
+            if (rule.hasTag() && BuiltInRegistries.FLUID.wrapAsHolder(fluid).is(rule.fluidTag())) {
                 return rule;
             }
         }

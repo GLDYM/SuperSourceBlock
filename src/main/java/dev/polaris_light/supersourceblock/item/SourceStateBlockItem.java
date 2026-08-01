@@ -1,7 +1,7 @@
 package dev.polaris_light.supersourceblock.item;
 
+import dev.polaris_light.supersourceblock.compat.MekanismCompat;
 import java.util.List;
-
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
@@ -66,6 +66,7 @@ public class SourceStateBlockItem extends BlockItem {
                 );
             }
         }
+
+        MekanismCompat.appendChemicalTooltip(tag, registries, tooltipComponents);
     }
 }
-

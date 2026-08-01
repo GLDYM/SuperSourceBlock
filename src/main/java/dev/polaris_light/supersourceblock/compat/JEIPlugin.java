@@ -1,6 +1,7 @@
 package dev.polaris_light.supersourceblock.compat;
 
 import dev.polaris_light.supersourceblock.SuperSourceBlockMod;
+import dev.polaris_light.supersourceblock.compat.mekanism.item.MekanismChemicalItems;
 import dev.polaris_light.supersourceblock.item.ModItems;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -40,6 +41,17 @@ public class JEIPlugin implements IModPlugin {
             VanillaTypes.ITEM_STACK,
             Component.translatable("jei.super_source_block.super_item_source_block.info")
         );
+        if (MekanismCompat.isMekanismLoaded()) {
+            registration.addIngredientInfo(
+                new ItemStack(MekanismChemicalItems.EMPTY_CHEMICAL_SOURCE_BLOCK.get()),
+                VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.super_source_block.empty_chemical_source_block.info")
+            );
+            registration.addIngredientInfo(
+                new ItemStack(MekanismChemicalItems.SUPER_CHEMICAL_SOURCE_BLOCK.get()),
+                VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.super_source_block.super_chemical_source_block.info")
+            );
+        }
     }
 }
-

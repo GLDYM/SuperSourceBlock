@@ -1,0 +1,30 @@
+{
+  "neoforge:load_conditions": [
+    {
+      "condition": "neoforge:mod_loaded",
+      "modid": "mekanism"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "group": "misc",
+  "pattern": [
+    "IGI",
+    "GTG",
+    "IGI"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "T": {
+      "item": "mekanism:basic_chemical_tank"
+    },
+    "G": {
+      "item": "minecraft:glass"
+    }
+  },
+  "result": {
+    "id": "super_source_block:empty_chemical_source_block",
+    "count": 1
+  }
+}

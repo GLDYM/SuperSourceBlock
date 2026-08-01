@@ -1,13 +1,19 @@
 package dev.polaris_light.supersourceblock.compat;
 
-import dev.polaris_light.supersourceblock.SuperSourceBlockMod;
-import dev.polaris_light.supersourceblock.block.entity.ModBlockEntities;
-import dev.polaris_light.supersourceblock.compat.mekanism.EmptyFluidChemicalHandler;
-import dev.polaris_light.supersourceblock.compat.mekanism.EmptyItemChemicalHandler;
-import mekanism.common.capabilities.Capabilities;
+import dev.polaris_light.supersourceblock.compat.mekanism.MekanismChemicalCapabilities;
+import dev.polaris_light.supersourceblock.compat.mekanism.MekanismChemicalUi;
+import dev.polaris_light.supersourceblock.compat.mekanism.client.MekanismChemicalClient;
+import dev.polaris_light.supersourceblock.compat.mekanism.data.ChemicalSourceRule;
+import dev.polaris_light.supersourceblock.compat.mekanism.data.MekanismChemicalRecipeManager;
+
+import java.util.List;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 
 public final class MekanismCompat {
     private static final String MEKANISM_MOD_ID = "mekanism";
@@ -15,27 +21,44 @@ public final class MekanismCompat {
     private MekanismCompat() {
     }
 
-    public static void init(IEventBus modEventBus) {
-        if (!ModList.get().isLoaded(MEKANISM_MOD_ID)) {
-            return;
-        }
-        modEventBus.addListener(MekanismCompat::registerCapabilities);
+    public static boolean isMekanismLoaded() {
+        return ModList.get().isLoaded(MEKANISM_MOD_ID);
     }
 
-    private static void registerCapabilities(RegisterCapabilitiesEvent event) {
-        try {
-            event.registerBlockEntity(
-                Capabilities.CHEMICAL.block(),
-                ModBlockEntities.EMPTY_FLUID_SOURCE_BLOCK_ENTITY.get(),
-                (blockEntity, side) -> side == null ? null : new EmptyFluidChemicalHandler()
-            );
-            event.registerBlockEntity(
-                Capabilities.CHEMICAL.block(),
-                ModBlockEntities.EMPTY_ITEM_SOURCE_BLOCK_ENTITY.get(),
-                (blockEntity, side) -> side == null ? null : new EmptyItemChemicalHandler()
-            );
-        } catch (Exception e) {
-            SuperSourceBlockMod.LOGGER.error("Failed to register Mekanism chemical compatibility", e);
+
+    public static void registerSourceBlockCapabilities(IEventBus modEventBus) {
+        if (!isMekanismLoaded()) {
+            return;
         }
+        modEventBus.addListener(MekanismChemicalCapabilities::registerCompatCapabilities);
+        modEventBus.addListener(MekanismChemicalCapabilities::registerSourceBlockCapabilities);
+    }
+
+    public static void addReloadListeners(AddReloadListenerEvent event) {
+        if (!isMekanismLoaded()) {
+            return;
+        }
+        MekanismChemicalRecipeManager.addReloadListeners(event);
+    }
+
+    public static void setChemicalRules(List<ChemicalSourceRule> rules) {
+        if (!isMekanismLoaded()) {
+            return;
+        }
+        MekanismChemicalRecipeManager.setChemicalRules(rules);
+    }
+
+    public static void appendChemicalTooltip(CompoundTag tag, HolderLookup.Provider registries, List<Component> tooltipComponents) {
+        if (!isMekanismLoaded()) {
+            return;
+        }
+        MekanismChemicalUi.appendChemicalTooltip(tag, registries, tooltipComponents);
+    }
+
+    public static void registerClientRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        if (!isMekanismLoaded()) {
+            return;
+        }
+        MekanismChemicalClient.registerRenderers(event);
     }
 }

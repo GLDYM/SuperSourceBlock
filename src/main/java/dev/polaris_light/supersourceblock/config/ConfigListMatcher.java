@@ -51,7 +51,7 @@ final class ConfigListMatcher {
             }
             if (entry.startsWith("#")) {
                 ResourceLocation id = ResourceLocation.tryParse(entry.substring(1));
-                if (id != null && fluid.builtInRegistryHolder().is(TagKey.create(Registries.FLUID, id))) {
+                if (id != null && BuiltInRegistries.FLUID.wrapAsHolder(fluid).is(TagKey.create(Registries.FLUID, id))) {
                     return true;
                 }
                 continue;
